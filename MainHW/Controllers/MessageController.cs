@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MainHW.Models;
 using MainHW.Services;
+using MainHW.Models.DTO;
+using AutoMapper;
 
 namespace MainHW.Controllers;
 
@@ -9,10 +11,12 @@ namespace MainHW.Controllers;
 public class MessageController: ControllerBase
 {
     private readonly MessageService messageService;
+    private readonly IMapper _mapper;
 
-    public MessageController(MessageService messageService)
+    public MessageController(MessageService messageService, IMapper mapper)
     {
         this.messageService = messageService;
+        this._mapper = mapper;
     }
 
     [HttpGet]
@@ -53,8 +57,20 @@ public class MessageController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Message>> AddMessageAsync([FromBody] Message newMessage)
+    public async Task<ActionResult<Message>> AddMessageAsync([FromBody] MessageAddRequest request)
     {
+        var user = HttpContext.Items["User"] as User;
+        if (user == null)
+        {
+            return Unauthorized("User is not authenticated.");
+        }
+
+        if (!string.Equals(user.Email, request.From, StringComparison.OrdinalIgnoreCase))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, "The sender email must match the email associated with the authorization token.");
+        }
+        
+        var newMessage = _mapper.Map<Message>(request);
         var message = await messageService.AddMessageAsync(newMessage);
         return Ok(message);
     }

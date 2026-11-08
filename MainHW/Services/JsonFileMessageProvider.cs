@@ -2,7 +2,7 @@
 
 namespace MainHW.Services;
 
-public class JsonFileMessageProvider<T> : IMessageProvider<T> where T : class
+public class JsonFileMessageProvider<T> : IDataProvider<T> where T : class
 {
     private readonly string dataFilePath;
 

@@ -8,16 +8,20 @@ var builder = WebApplication.CreateBuilder(args);
 var messagesDataFilePath = builder.Configuration["MessagesDataFile"] ?? "messages.json";
 var usersDataFilePath = builder.Configuration["UsersDataFile"] ?? "users.json";
 
-builder.Services.AddSingleton<IMessageProvider<Message>>(new JsonFileMessageProvider<Message>(messagesDataFilePath));
+builder.Services.AddSingleton<IDataProvider<Message>>(new JsonFileMessageProvider<Message>(messagesDataFilePath));
 builder.Services.AddScoped<MessageService>();
 
-
-builder.Services.AddSingleton<IMessageProvider<User>>(new JsonFileMessageProvider<User>(usersDataFilePath));
+builder.Services.AddSingleton<IDataProvider<User>>(new JsonFileMessageProvider<User>(usersDataFilePath));
 builder.Services.AddScoped<UserService>();
 
 builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddAutoMapper(c =>
+{
+    c.LicenseKey = "MY_LICENSE_KEY";
+}, typeof(Program));
 
 // TODO налашутвання роботи з кодуванням JSON
 
@@ -42,7 +46,10 @@ app.Use(async (/*HttpContext*/ context, /*Func<Task>*/ next) =>
     await next(context);
 });
 
-app.UseMiddleware<UserAutorizationByToken>();
+app.UseWhen(
+    context => context.Request.Method.Equals(HttpMethods.Post, StringComparison.OrdinalIgnoreCase) &&
+               context.Request.Path.Equals("/messages", StringComparison.OrdinalIgnoreCase),
+    branch => branch.UseMiddleware<UserAutorizationByToken>());
 
 app.MapControllers();
 

@@ -6,4 +6,5 @@ public class UserViewDto
     public string Email { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public int RoleId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

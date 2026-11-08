@@ -1,14 +1,17 @@
 ﻿using MainHW.Models;
+using AutoMapper;
 
 namespace MainHW.Services;
 
 public class MessageService
 {
-    private readonly IMessageProvider<Message> _messageProvider;
+    private readonly IDataProvider<Message> _messageProvider;
+    private readonly IMapper _mapper;
 
-    public MessageService(IMessageProvider<Message> messageProvider)
+    public MessageService(IDataProvider<Message> messageProvider, IMapper mapper)
     {
         this._messageProvider = messageProvider;
+        this._mapper = mapper;
     }
 
     public async Task<ICollection<Message>> GetAllMessagesAsync()
@@ -21,8 +24,6 @@ public class MessageService
         var products = await _messageProvider.GetAllAsync();
         return products.Where(p => p.From == searchMessage.From && p.DateTime > searchMessage.DateTime).ToList();
     }
-
-
 
     public async Task<Message?> GetMessageByIdAsync(int id)
     {
@@ -47,10 +48,8 @@ public class MessageService
         {
             return null;
         }
-        message.DateTime = updatedMessage.DateTime;
-        message.Text  = updatedMessage.Text;
-        message.From =  updatedMessage.From;
-        
+        message = _mapper.Map(updatedMessage, message);
+
         await _messageProvider.SaveAsync(messages);
         return message;
     }

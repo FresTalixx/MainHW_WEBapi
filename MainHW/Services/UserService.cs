@@ -1,15 +1,19 @@
 ﻿using MainHW.Models;
 using MainHW.Models.DTO;
+using AutoMapper;
+using MainHW.Models.Mapper;
 
 namespace MainHW.Services;
 
 public class UserService
 {
-    private readonly IMessageProvider<User> _messageProvider;
+    private readonly IDataProvider<User> _messageProvider;
+    private readonly IMapper _mapper;
 
-    public UserService(IMessageProvider<User> dataProvider)
+    public UserService(IDataProvider<User> dataProvider, IMapper mapper)
     {
         this._messageProvider = dataProvider;
+        this._mapper = mapper;
     }
 
     public async Task<ICollection<User>> GetAllAsync()
@@ -25,13 +29,8 @@ public class UserService
         {
             throw new InvalidOperationException("A user with this email already exists.");
         }
-
-        var newUser = new User
-        {
-            Name = request.Name,
-            Email = request.Email,
-            Password = request.Password
-        };
+        // use mapper to map UserRegisterRequest to User
+        var newUser = _mapper.Map<User>(request);
 
         newUser.Token = Guid.NewGuid().ToString(); // Generate a unique token for the user
         newUser.IsActive = true; // Set the user as active by default
@@ -80,12 +79,7 @@ public class UserService
         {
             throw new InvalidOperationException("A user with this email already exists.");
         }
-        user.Name = updatedUser.Name;
-        user.Email = updatedUser.Email;
-        user.Password = updatedUser.Password; // In a real application, ensure to hash the password
-        user.Token = updatedUser.Token;
-        user.IsActive = updatedUser.IsActive;
-        user.RoleId = updatedUser.RoleId;
+        user = _mapper.Map(updatedUser, user);
         await _messageProvider.SaveAsync(users);
         return user;
     }

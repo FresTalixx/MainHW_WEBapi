@@ -2,7 +2,7 @@
 
 namespace MainHW.Services;
 
-public class JsonFileMessagesProvider : JsonFileMessageProvider<Message>, IMessageProvider<Message>
+public class JsonFileMessagesProvider : JsonFileMessageProvider<Message>, IDataProvider<Message>
 {
     public JsonFileMessagesProvider(string dataFilePath) : base(dataFilePath)
     {

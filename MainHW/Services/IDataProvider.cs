@@ -1,6 +1,6 @@
 ﻿namespace MainHW.Services;
 
-public interface IMessageProvider<T> where T : class
+public interface IDataProvider<T> where T : class
 {
     public Task<ICollection<T>> GetAllAsync();
 

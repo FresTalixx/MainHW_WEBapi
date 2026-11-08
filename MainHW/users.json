@@ -1,1 +1,1 @@
-[{"Id":1,"Name":"bob","Email":"bob@email.com","Password":"pass123","Token":"f241bfa0-f271-4fee-86d4-5df4bea5f92c","IsActive":true,"RoleId":2}]
+[{"Id":1,"Name":"bob","Email":"bob@email.com","Password":"pass123","Token":"f241bfa0-f271-4fee-86d4-5df4bea5f92c","IsActive":true,"RoleId":2,"CreatedAt":"2026-11-08T15:01:04.6361745Z"},{"Id":2,"Name":"bob1","Email":"bob1@email.com","Password":"string123","Token":"b7acd29c-0936-48e8-97b3-94e9f995a375","IsActive":true,"RoleId":2,"CreatedAt":"2026-11-08T15:01:04.6423216Z"}]

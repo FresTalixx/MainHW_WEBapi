@@ -53,21 +53,21 @@ public class MessageController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Message>> AddMessageAsync([FromBody] Message newProduct)
+    public async Task<ActionResult<Message>> AddMessageAsync([FromBody] Message newMessage)
     {
-        var product = await messageService.AddMessageAsync(newProduct);
-        return Ok(product);
+        var message = await messageService.AddMessageAsync(newMessage);
+        return Ok(message);
     }
         
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<Message>> UpdateMessageAsync(int id, [FromBody] Message updatedProduct)
+    public async Task<ActionResult<Message>> UpdateMessageAsync(int id, [FromBody] Message updatedMessage)
     {
-        var product = await messageService.UpdateMessageAsync(id, updatedProduct);
-        if (product == null)
+        var message = await messageService.UpdateMessageAsync(id, updatedMessage);
+        if (message == null)
         {
             return NotFound();
         }
-        return Ok(product);
+        return Ok(message);
     }
 
     [HttpDelete("{id:int}")]

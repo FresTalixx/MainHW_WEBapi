@@ -46,10 +46,7 @@ app.Use(async (/*HttpContext*/ context, /*Func<Task>*/ next) =>
     await next(context);
 });
 
-app.UseWhen(
-    context => context.Request.Method.Equals(HttpMethods.Post, StringComparison.OrdinalIgnoreCase) &&
-               context.Request.Path.Equals("/messages", StringComparison.OrdinalIgnoreCase),
-    branch => branch.UseMiddleware<UserAutorizationByToken>());
+app.UseMiddleware<UserAutorizationByToken>();
 
 app.MapControllers();
 

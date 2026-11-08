@@ -71,6 +71,7 @@ public class MessageController: ControllerBase
         }
         
         var newMessage = _mapper.Map<Message>(request);
+        newMessage.DateTime = DateTime.Now; // Set the current date and time
         var message = await messageService.AddMessageAsync(newMessage);
         return Ok(message);
     }

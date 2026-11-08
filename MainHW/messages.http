@@ -1,0 +1,76 @@
+@baseUrl = http://localhost:5142
+@token = 136643d8-adbc-4a0e-bd93-43e52fe5f401
+@userEmail = test.user@example.com
+
+### Get all messages
+GET {{baseUrl}}/messages
+X-My-Authorization: {{token}}
+Accept: application/json
+
+### Search messages from a user after a date
+GET {{baseUrl}}/messages/search?from={{userEmail}}&dateTime=2020-01-01T00:00:00
+Accept: application/json
+
+### Get a message by ID
+GET {{baseUrl}}/messages/1
+Accept: application/json
+
+### Get a missing message
+GET {{baseUrl}}/messages/999999
+Accept: application/json
+
+### Create a message
+# Replace @token and @userEmail with the token and email of a registered user.
+POST {{baseUrl}}/messages
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "from": "{{userEmail}}",
+  "text": "Hello from the HTTP client."
+}
+
+### Create a message without authorization
+POST {{baseUrl}}/messages
+Content-Type: application/json
+
+{
+  "from": "{{userEmail}}",
+  "text": "This request should be unauthorized."
+}
+
+### Create a message for a different user
+POST {{baseUrl}}/messages
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "from": "someone.else@example.com",
+  "text": "This should be rejected when the token is working."
+}
+
+### Update a message
+PUT {{baseUrl}}/messages/1
+Content-Type: application/json
+
+{
+  "from": "{{userEmail}}",
+  "text": "Updated message text.",
+  "dateTime": "2025-01-01T12:00:00"
+}
+
+### Update a missing message
+PUT {{baseUrl}}/messages/999999
+Content-Type: application/json
+
+{
+  "from": "{{userEmail}}",
+  "text": "This message does not exist.",
+  "dateTime": "2025-01-01T12:00:00"
+}
+
+### Delete a message
+DELETE {{baseUrl}}/messages/1
+
+### Delete a missing message
+DELETE {{baseUrl}}/messages/999999

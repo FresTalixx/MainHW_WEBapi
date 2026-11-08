@@ -3,6 +3,7 @@ using MainHW.Models;
 using MainHW.Models.DTO;
 using MainHW.Services;
 using static System.Net.Mime.MediaTypeNames;
+using AutoMapper;
 namespace MainHW.Controllers;
 
 [ApiController]
@@ -10,10 +11,12 @@ namespace MainHW.Controllers;
 public class UserController : ControllerBase
 {
     private readonly UserService _userService;
+    private readonly IMapper _mapper;
 
-    public UserController(UserService userService)
+    public UserController(UserService userService, IMapper mapper)
     {
         _userService = userService;
+        _mapper = mapper;
     }
 
 
@@ -43,7 +46,7 @@ public class UserController : ControllerBase
         {
             return Unauthorized("Invalid email or password.");
         }
-        return Ok(new UserToken { Token = user.Token });
+        return Ok(_mapper.Map<UserToken>(user));
     }
 
     // по ід користувача отримати дані користувача

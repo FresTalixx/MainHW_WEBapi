@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:5142
+@email = test.user@example.com
+@password = Password123!
+
+### Register a new user
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Login with the new user
+# Copy the token from the response and set @token below.
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Login with an incorrect password
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "WrongPassword123!"
+}
+
+### Register with invalid data
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+  "name": "No",
+  "email": "not-an-email",
+  "password": "123"
+}
+
+### Get all users
+GET {{baseUrl}}/api/user/all
+Accept: application/json

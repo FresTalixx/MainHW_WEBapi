@@ -1,4 +1,8 @@
 ﻿namespace MainHW.Models;
+
+/// <summary>
+/// Represents a search message.
+/// </summary>
 public class SearchMessage
 {
     /// <summary>

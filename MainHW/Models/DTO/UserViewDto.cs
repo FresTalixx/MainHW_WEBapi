@@ -1,4 +1,8 @@
 ﻿namespace MainHW.Models.DTO;
+
+/// <summary>
+/// Represents user information for display.
+/// </summary>
 public class UserViewDto
 {
     /// <summary>

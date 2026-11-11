@@ -1,4 +1,7 @@
 ﻿namespace MainHW.Models.DTO;
+/// <summary>
+/// Represents a user token.
+/// </summary>
 public class UserToken
 {
     /// <summary>

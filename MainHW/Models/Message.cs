@@ -2,6 +2,9 @@
 
 namespace MainHW.Models;
 
+/// <summary>
+/// Represents a message containing a sender, text, identifier, and date and time.
+/// </summary>
 public class Message
 {
     //Створити проєкт веб - апі

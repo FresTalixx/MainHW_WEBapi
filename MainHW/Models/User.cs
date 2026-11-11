@@ -11,6 +11,11 @@ public static class Roles
     public const int User = 2;
 }
 
+/// <summary>
+/// Represents a user account.
+/// </summary>
+/// <remarks>Passwords should be stored securely using hashing and salting; plaintext passwords should not be
+/// retained.</remarks>
 public class User
 {
     /// <summary>

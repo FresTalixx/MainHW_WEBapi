@@ -2,6 +2,11 @@
 
 namespace MainHW.Models.DTO;
 
+/// <summary>
+/// Represents the data required to register a user.
+/// </summary>
+/// <remarks>The name must be between 3 and 100 characters, the email address must be valid, and the password must
+/// contain at least 6 characters.</remarks>
 public class UserRegisterRequest
 {
     /// <summary>

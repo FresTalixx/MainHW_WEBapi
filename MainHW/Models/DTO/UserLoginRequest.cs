@@ -2,6 +2,9 @@
 
 namespace MainHW.Models.DTO;
 
+/// <summary>
+/// 
+/// </summary>
 public class UserLoginRequest
 {
 

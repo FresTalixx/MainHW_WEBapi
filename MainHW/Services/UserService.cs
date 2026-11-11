@@ -7,23 +7,23 @@ namespace MainHW.Services;
 
 public class UserService
 {
-    private readonly IDataProvider<User> _messageProvider;
+    private readonly IRepository<User> _userRepository;
     private readonly IMapper _mapper;
 
-    public UserService(IDataProvider<User> dataProvider, IMapper mapper)
+    public UserService(IRepository<User> _userRepository, IMapper mapper)
     {
-        this._messageProvider = dataProvider;
+        this._userRepository = _userRepository;
         this._mapper = mapper;
     }
 
     public async Task<ICollection<User>> GetAllAsync()
     {
-        return await _messageProvider.GetAllAsync();
+        return await _userRepository.GetAllAsync();
     }
 
     public async Task<User> RegisterAsync(UserRegisterRequest request)
     {
-        var users = await _messageProvider.GetAllAsync();
+        var users = await _userRepository.GetAllAsync();
         // email unique
         if (users.Any(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase)))
         {
@@ -37,21 +37,21 @@ public class UserService
         newUser.RoleId = Roles.User; // Assign the default role (User)
 
         newUser.Id = users.Any() ? users.Max(u => u.Id) + 1 : 1;
-        users.Add(newUser);
-        await _messageProvider.SaveAsync(users);
+        _userRepository.Add(newUser);
+        await _userRepository.SaveChangesAsync();
         return newUser;
     }
 
     public async Task<User?> AuthenticateAsync(string email, string password)
     {
-        var users = await _messageProvider.GetAllAsync();
+        var users = await _userRepository.GetAllAsync();
         var user = users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase) && u.Password == password);
         return user;
     }
 
     public async Task<User> CreateUserAsync(User newUser)
     {
-        var users = await _messageProvider.GetAllAsync();
+        var users = await _userRepository.GetAllAsync();
 
         // email unique
         if (users.Any(u => u.Email.Equals(newUser.Email, StringComparison.OrdinalIgnoreCase)))
@@ -60,14 +60,14 @@ public class UserService
         }
 
         newUser.Id = users.Any() ? users.Max(u => u.Id) + 1 : 1;
-        users.Add(newUser);
-        await _messageProvider.SaveAsync(users);
+        _userRepository.Add(newUser);
+        await _userRepository.SaveChangesAsync();
         return newUser;
     }
 
     public async Task<User?> UpdateUserAsync(User updatedUser)
     {
-        var users = await _messageProvider.GetAllAsync();
+        var users = await _userRepository.GetAllAsync();
         var user = users.FirstOrDefault(u => u.Id == updatedUser.Id);
         if (user == null)
         {
@@ -80,19 +80,19 @@ public class UserService
             throw new InvalidOperationException("A user with this email already exists.");
         }
         user = _mapper.Map(updatedUser, user);
-        await _messageProvider.SaveAsync(users);
+        await _userRepository.SaveChangesAsync();
         return user;
     }
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
-        var users = await _messageProvider.GetAllAsync();
+        var users = await _userRepository.GetAllAsync();
         return users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<User?> GetUserByTokenAsync(string token)
     {
-        var users = await _messageProvider.GetAllAsync();
+        var users = await _userRepository.GetAllAsync();
         return users.FirstOrDefault(u => u.Token == token);
     }
 }

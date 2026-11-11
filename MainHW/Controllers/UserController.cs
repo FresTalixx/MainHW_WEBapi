@@ -21,7 +21,12 @@ public class UserController : ControllerBase
 
 
     // реєстрація користувача
-
+    /// <summary>
+    /// Registers a new user and returns an authentication token.
+    /// </summary>
+    /// <param name="newUser">The user registration details.</param>
+    /// <returns>An action result containing the authentication token for the registered user, or a bad request response if
+    /// registration fails.</returns>
     [HttpPost("register")]
     public async Task<ActionResult<UserToken>> RegisterUserAsync([FromBody] UserRegisterRequest newUser)
     {
@@ -37,7 +42,12 @@ public class UserController : ControllerBase
     }
 
     // авторизація користувача
-
+    /// <summary>
+    /// Authenticates a user and returns an access token.
+    /// </summary>
+    /// <param name="loginUser">The user's email address and password.</param>
+    /// <returns>An action result containing the user's access token, or an unauthorized response if the email address or
+    /// password is invalid.</returns>
     [HttpPost("login")]
     public async Task<ActionResult<UserToken>> AuthenticateUserAsync([FromBody] UserLoginRequest loginUser)
     {
@@ -56,6 +66,10 @@ public class UserController : ControllerBase
 
 
     // перегляд всіх користувачів
+    /// <summary>
+    /// Retrieves all users.
+    /// </summary>
+    /// <returns>An action result containing the collection of users.</returns>
     [HttpGet("all")]
     public async Task<ActionResult<ICollection<UserViewDto>>> GetAllUsersAsync()
     {

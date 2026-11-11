@@ -19,6 +19,10 @@ public class MessageController: ControllerBase
         this._mapper = mapper;
     }
 
+    /// <summary>
+    /// Gets all messages.
+    /// </summary>
+    /// <returns>A result containing the collection of messages.</returns>
     [HttpGet]
     public async Task<ActionResult<ICollection<Message>>> GetAllMessagesAsync()
     {
@@ -27,6 +31,12 @@ public class MessageController: ControllerBase
     }
 
     // GET /messages/search?minPrice=10&maxPrice=100
+    /// <summary>
+    /// Searches for messages matching the specified criteria.
+    /// </summary>
+    /// <param name="searchMessage">The search criteria, including the sender and date filters.</param>
+    /// <returns>An action result containing the matching messages, or a bad request response if the sender is not specified or
+    /// the date is in the future.</returns>
     [HttpGet("search")]
     public async Task<ActionResult<ICollection<Message>>> SearchMessagesAsync([FromQuery] SearchMessage searchMessage)
     {
@@ -45,6 +55,11 @@ public class MessageController: ControllerBase
 
 
     // GET /messages/{id}
+    /// <summary>
+    /// Retrieves a message by its identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the message to retrieve.</param>
+    /// <returns>An action result containing the message if found; otherwise, a 404 Not Found response.</returns>
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Message>> GetMessageByIdAsync(int id)
     {
@@ -56,6 +71,12 @@ public class MessageController: ControllerBase
         return Ok(message);
     }
 
+    /// <summary>
+    /// Adds a message for the authenticated user.
+    /// </summary>
+    /// <param name="request">The message to add. The sender email must match the email associated with the authorization token.</param>
+    /// <returns>An action result containing the added message, or an error response if the user is unauthenticated or the sender
+    /// email does not match.</returns>
     [HttpPost]
     public async Task<ActionResult<Message>> AddMessageAsync([FromBody] MessageAddRequest request)
     {
@@ -76,6 +97,12 @@ public class MessageController: ControllerBase
         return Ok(message);
     }
         
+    /// <summary>
+    /// Updates a message.
+    /// </summary>
+    /// <param name="id">The identifier of the message to update.</param>
+    /// <param name="updatedMessage">The updated message.</param>
+    /// <returns>An action result containing the updated message, or NotFound if the message does not exist.</returns>
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Message>> UpdateMessageAsync(int id, [FromBody] Message updatedMessage)
     {
@@ -87,6 +114,11 @@ public class MessageController: ControllerBase
         return Ok(message);
     }
 
+    /// <summary>
+    /// Deletes a message.
+    /// </summary>
+    /// <param name="id">The unique identifier of the message to delete.</param>
+    /// <returns>An <see cref="OkResult"/> if the message is deleted; otherwise, an <see cref="NotFoundResult"/>.</returns>
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteMessageAsync(int id)
     {

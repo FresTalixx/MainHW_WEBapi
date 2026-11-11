@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5142
-@token = 136643d8-adbc-4a0e-bd93-43e52fe5f401
+@token = 7be16e9c-27e4-4daa-a2a1-402edc2ec35a
 @userEmail = test.user@example.com
 
 ### Get all messages

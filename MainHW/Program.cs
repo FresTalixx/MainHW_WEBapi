@@ -2,11 +2,18 @@ using Microsoft.AspNetCore.Mvc;
 using MainHW.Models;
 using MainHW.Services;
 using MainHW.Middleware;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 var messagesDataFilePath = builder.Configuration["MessagesDataFile"] ?? "messages.json";
 var usersDataFilePath = builder.Configuration["UsersDataFile"] ?? "users.json";
+
+builder.Services.AddDbContext<ApiDbContext>(options =>
+    options.UseSqlite(connectionString));
 
 builder.Services.AddSingleton<IDataProvider<Message>>(new JsonFileMessageProvider<Message>(messagesDataFilePath));
 builder.Services.AddScoped<MessageService>();
@@ -22,6 +29,8 @@ builder.Services.AddAutoMapper(c =>
 {
     c.LicenseKey = "MY_LICENSE_KEY";
 }, typeof(Program));
+
+builder.Services.AddScoped<IRepository<User>, UserRepository>();
 
 // TODO налашутвання роботи з кодуванням JSON
 

@@ -35,7 +35,7 @@ public class MessageService
     {
         var messages = await _messageRepository.GetAllAsync();
         newMessage.Id = messages.Any() ? messages.Max(p => p.Id) + 1 : 1;
-        messages.Add(newMessage);
+        _messageRepository.Add(newMessage);
         await _messageRepository.SaveChangesAsync();
         return newMessage;
     }

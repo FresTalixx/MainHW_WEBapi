@@ -18,7 +18,8 @@ public class UserAutorizationByToken
         var acceptRoutes = new List<string> {
             "/openapi/v1.json",
             "/api/user/register", 
-            "/api/user/login" 
+            "/api/user/login" ,
+            "/swagger/index.html"
         };
         var requestPath = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
         if (acceptRoutes.Contains(requestPath)){

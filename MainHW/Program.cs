@@ -38,6 +38,8 @@ builder.Services.AddScoped<IRepository<User>, UserRepository>();
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -57,7 +59,7 @@ app.Use(async (/*HttpContext*/ context, /*Func<Task>*/ next) =>
     await next(context);
 });
 
-app.UseMiddleware<UserAutorizationByToken>();
+//app.UseMiddleware<UserAutorizationByToken>();
 
 app.MapControllers();
 

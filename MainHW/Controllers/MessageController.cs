@@ -10,12 +10,12 @@ namespace MainHW.Controllers;
 [Route("messages")]
 public class MessageController: ControllerBase
 {
-    private readonly MessageService messageService;
+    private readonly MessageService _messageService;
     private readonly IMapper _mapper;
 
     public MessageController(MessageService messageService, IMapper mapper)
     {
-        this.messageService = messageService;
+        this._messageService = messageService;
         this._mapper = mapper;
     }
 
@@ -26,7 +26,7 @@ public class MessageController: ControllerBase
     [HttpGet]
     public async Task<ActionResult<ICollection<Message>>> GetAllMessagesAsync()
     {
-        var messages = await messageService.GetAllMessagesAsync();
+        var messages = await _messageService.GetAllMessagesAsync();
         return Ok(messages);
     }
 
@@ -49,7 +49,7 @@ public class MessageController: ControllerBase
             return BadRequest("Date can't be in the future.");
         }
 
-        var messages = await messageService.SearchMessagesAsync(searchMessage);
+        var messages = await _messageService.SearchMessagesAsync(searchMessage);
         return Ok(messages);
     }
 
@@ -63,7 +63,7 @@ public class MessageController: ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Message>> GetMessageByIdAsync(int id)
     {
-        var message = await messageService.GetMessageByIdAsync(id);
+        var message = await _messageService.GetMessageByIdAsync(id);
         if (message == null)
         {
             return NotFound(); // 404 Not Found
@@ -93,7 +93,7 @@ public class MessageController: ControllerBase
         
         var newMessage = _mapper.Map<Message>(request);
         newMessage.DateTime = DateTime.Now; // Set the current date and time
-        var message = await messageService.AddMessageAsync(newMessage);
+        var message = await _messageService.AddMessageAsync(newMessage);
         return Ok(message);
     }
         
@@ -106,7 +106,7 @@ public class MessageController: ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Message>> UpdateMessageAsync(int id, [FromBody] Message updatedMessage)
     {
-        var message = await messageService.UpdateMessageAsync(id, updatedMessage);
+        var message = await _messageService.UpdateMessageAsync(id, updatedMessage);
         if (message == null)
         {
             return NotFound();
@@ -122,7 +122,7 @@ public class MessageController: ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteMessageAsync(int id)
     {
-        var result = await messageService.DeleteMessageAsync(id);
+        var result = await _messageService.DeleteMessageAsync(id);
         if (!result)
         {
             return NotFound();

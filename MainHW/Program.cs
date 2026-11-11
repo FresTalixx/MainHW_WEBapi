@@ -15,11 +15,13 @@ var usersDataFilePath = builder.Configuration["UsersDataFile"] ?? "users.json";
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseSqlite(connectionString));
 
-builder.Services.AddSingleton<IDataProvider<Message>>(new JsonFileMessageProvider<Message>(messagesDataFilePath));
+builder.Services.AddScoped<MessageRepository>();
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<OrderRepository>();
+        
 builder.Services.AddScoped<MessageService>();
-
-builder.Services.AddSingleton<IDataProvider<User>>(new JsonFileMessageProvider<User>(usersDataFilePath));
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<OrderService>();
 
 builder.Services.AddControllers();
 

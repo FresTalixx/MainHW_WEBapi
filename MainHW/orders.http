@@ -1,0 +1,59 @@
+@baseUrl = http://localhost:5142
+@token = 7d6dfb14-70d2-4aa5-8316-a64507ecce21
+@orderId = 1
+
+### Get all orders
+GET {{baseUrl}}/api/order
+X-My-Authorization: {{token}}
+Accept: application/json
+
+### Create an order
+POST {{baseUrl}}/api/order
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 2,
+  "totalCost": 150,
+  "isCompleted": false
+}
+
+### Update an order's completion status
+# Change @orderId to an existing order ID.
+PUT {{baseUrl}}/api/order/{{orderId}}/status
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+true
+
+### Mark an order as incomplete
+PUT {{baseUrl}}/api/order/{{orderId}}/status
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+false
+
+### Update an order's quantity
+PUT {{baseUrl}}/api/order/{{orderId}}/quantity
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+5
+
+### Update the status of a missing order
+PUT {{baseUrl}}/api/order/999999/status
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+true
+
+### Update the quantity of a missing order
+PUT {{baseUrl}}/api/order/999999/quantity
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+5
+
+### Get all orders without authorization
+GET {{baseUrl}}/api/order
+Accept: application/json

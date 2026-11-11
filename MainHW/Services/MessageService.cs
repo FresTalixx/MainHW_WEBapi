@@ -5,44 +5,44 @@ namespace MainHW.Services;
 
 public class MessageService
 {
-    private readonly IDataProvider<Message> _messageProvider;
+    private readonly MessageRepository _messageRepository;
     private readonly IMapper _mapper;
 
-    public MessageService(IDataProvider<Message> messageProvider, IMapper mapper)
+    public MessageService(MessageRepository messageRepository, IMapper mapper)
     {
-        this._messageProvider = messageProvider;
+        this._messageRepository = messageRepository;
         this._mapper = mapper;
     }
 
     public async Task<ICollection<Message>> GetAllMessagesAsync()
     {
-        return await _messageProvider.GetAllAsync();
+        return await _messageRepository.GetAllAsync();
     }
 
     public async Task<ICollection<Message>> SearchMessagesAsync(SearchMessage searchMessage)
     {
-        var products = await _messageProvider.GetAllAsync();
+        var products = await _messageRepository.GetAllAsync();
         return products.Where(p => p.From == searchMessage.From && p.DateTime > searchMessage.DateTime).ToList();
     }
 
     public async Task<Message?> GetMessageByIdAsync(int id)
     {
-        var products = await _messageProvider.GetAllAsync();
+        var products = await _messageRepository.GetAllAsync();
         return products.FirstOrDefault(p => p.Id == id);
     }
 
     public async Task<Message> AddMessageAsync(Message newMessage)
     {
-        var messages = await _messageProvider.GetAllAsync();
+        var messages = await _messageRepository.GetAllAsync();
         newMessage.Id = messages.Any() ? messages.Max(p => p.Id) + 1 : 1;
         messages.Add(newMessage);
-        await _messageProvider.SaveAsync(messages);
+        await _messageRepository.SaveChangesAsync();
         return newMessage;
     }
 
     public async Task<Message?> UpdateMessageAsync(int id, Message updatedMessage)
     {
-        var messages = await _messageProvider.GetAllAsync();
+        var messages = await _messageRepository.GetAllAsync();
         var message = messages.FirstOrDefault(p => p.Id == id);
         if (message == null)
         {
@@ -50,20 +50,20 @@ public class MessageService
         }
         message = _mapper.Map(updatedMessage, message);
 
-        await _messageProvider.SaveAsync(messages);
+        await _messageRepository.SaveChangesAsync();
         return message;
     }
 
     public async Task<bool> DeleteMessageAsync(int id)
     {
-        var products = await _messageProvider.GetAllAsync();
+        var products = await _messageRepository.GetAllAsync();
         var product = products.FirstOrDefault(p => p.Id == id);
         if (product == null)
         {
             return false;
         }
         products.Remove(product);
-        await _messageProvider.SaveAsync(products);
+        await _messageRepository.SaveChangesAsync();
         return true;
     }
 }

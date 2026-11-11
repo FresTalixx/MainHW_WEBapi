@@ -7,10 +7,10 @@ namespace MainHW.Services;
 
 public class UserService
 {
-    private readonly IRepository<User> _userRepository;
+    private readonly UserRepository _userRepository;
     private readonly IMapper _mapper;
 
-    public UserService(IRepository<User> _userRepository, IMapper mapper)
+    public UserService(UserRepository _userRepository, IMapper mapper)
     {
         this._userRepository = _userRepository;
         this._mapper = mapper;

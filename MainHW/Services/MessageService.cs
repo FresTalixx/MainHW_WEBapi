@@ -56,13 +56,14 @@ public class MessageService
 
     public async Task<bool> DeleteMessageAsync(int id)
     {
-        var products = await _messageRepository.GetAllAsync();
-        var product = products.FirstOrDefault(p => p.Id == id);
-        if (product == null)
+        var message = await _messageRepository.GetByIdAsync(id);
+
+        if (message == null)
         {
             return false;
         }
-        products.Remove(product);
+
+        _messageRepository.Remove(message);
         await _messageRepository.SaveChangesAsync();
         return true;
     }

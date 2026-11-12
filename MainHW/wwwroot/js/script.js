@@ -24,11 +24,23 @@ registerForm.addEventListener('submit', async (event) => {
         },
         body: JSON.stringify(registerRequest)
     })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json()
+                .then(response => {
+                    console.log('Response data:', response);
+                    return response;
+                })
+                .catch (error => {
+                    console.error('Error parsing response:', error, data);
+                });
+        })
         .then(data => {
-            if (data.success) {
+            if (data != null) {
                 errorMessageElement.textContent = 'Registration successful!';
                 localStorage.setItem('token', data.token);
+                console.log('Token stored in localStorage:', data.token);
+                console.log('Token retrieved from localStorage:', localStorage.getItem('token'));
             } else {
 
                 /*
@@ -68,7 +80,16 @@ getAllMessagesButton.addEventListener("click", async () => {
             "Content-Type": "application/json"
         }
     })
-    .then(response => response.json())
+        .then(response => {
+            return response.json()
+                .then(data => {
+                    console.log('Response data:', data);
+                    return data;
+                })
+                .catch(error => {
+                    console.error('Error parsing response:', error);
+                })
+        })
         .then(data => {
             console.log(data);
         const messagesTable = document.getElementById('messagesTable');

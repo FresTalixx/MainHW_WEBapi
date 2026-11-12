@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5142
-@email = test3.user@example.com
+@email = vlad.user@example.com
 @password = Password123!
 
 ### Register a new user

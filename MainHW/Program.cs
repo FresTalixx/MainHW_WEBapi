@@ -59,7 +59,7 @@ app.Use(async (/*HttpContext*/ context, /*Func<Task>*/ next) =>
     await next(context);
 });
 
-//app.UseMiddleware<UserAutorizationByToken>();
+app.UseMiddleware<UserAutorizationByToken>();
 
 app.MapControllers();
 

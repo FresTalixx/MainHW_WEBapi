@@ -1,0 +1,63 @@
+@baseUrl = https://localhost:7242
+@token = 7d6dfb14-70d2-4aa5-8316-a64507ecce21
+@categoryId = 3
+
+### Get all categories
+GET {{baseUrl}}/api/categories
+X-My-Authorization: {{token}}
+Accept: application/json
+
+### Get paginated categories
+GET {{baseUrl}}/api/categories/paginated?pageNumber=5&pageSize=5
+X-My-Authorization: {{token}}
+Accept: application/json
+
+### Create a category
+POST {{baseUrl}}/api/categories
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "name": "Electronics"
+}
+
+### Update a category
+# Change @categoryId to an existing category ID.
+PUT {{baseUrl}}/api/categories/{{categoryId}}
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "name": "Home Electronics"
+}
+
+### Delete a category
+# Change @categoryId to an existing category ID.
+DELETE {{baseUrl}}/api/categories/{{categoryId}}
+X-My-Authorization: {{token}}
+
+### Get categories without authorization (should return 401)
+GET {{baseUrl}}/api/categories
+Accept: application/json
+
+### Create a category with an invalid name (should return 400)
+POST {{baseUrl}}/api/categories
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "name": "No"
+}
+
+### Update a missing category (should return 404)
+PUT {{baseUrl}}/api/categories/999999
+X-My-Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "name": "Missing Category"
+}
+
+### Delete a missing category (should return 404)
+DELETE {{baseUrl}}/api/categories/999999
+X-My-Authorization: {{token}}

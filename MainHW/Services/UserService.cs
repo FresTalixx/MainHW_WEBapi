@@ -2,6 +2,7 @@
 using MainHW.Models.DTO;
 using AutoMapper;
 using MainHW.Models.Mapper;
+using MainHW.Repositories;
 
 namespace MainHW.Services;
 

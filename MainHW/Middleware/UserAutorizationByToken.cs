@@ -19,7 +19,8 @@ public class UserAutorizationByToken
             "/openapi/v1.json",
             "/api/user/register", 
             "/api/user/login" ,
-            "/swagger/index.html"
+            "/swagger/index.html",
+            "/"
         };
         var requestPath = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
         if (acceptRoutes.Contains(requestPath)){

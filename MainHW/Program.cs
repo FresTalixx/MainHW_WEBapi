@@ -3,14 +3,12 @@ using MainHW.Models;
 using MainHW.Services;
 using MainHW.Middleware;
 using Microsoft.EntityFrameworkCore;
+using MainHW.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-var messagesDataFilePath = builder.Configuration["MessagesDataFile"] ?? "messages.json";
-var usersDataFilePath = builder.Configuration["UsersDataFile"] ?? "users.json";
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseSqlite(connectionString));
@@ -18,10 +16,12 @@ builder.Services.AddDbContext<ApiDbContext>(options =>
 builder.Services.AddScoped<MessageRepository>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<OrderRepository>();
-        
+builder.Services.AddScoped<CategoryRepository>();
+
 builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<CategoryService>();
 
 builder.Services.AddControllers();
 
@@ -38,6 +38,7 @@ builder.Services.AddScoped<IRepository<User>, UserRepository>();
 
 var app = builder.Build();
 
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
@@ -46,7 +47,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/openapi/v1.json", "My API V1");
-        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+        c.RoutePrefix = "swagger";
     });
 }
 

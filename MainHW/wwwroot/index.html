@@ -1,43 +1,85 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Static Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Category Manager</title>
+    <style>
+        :root { color-scheme: light; --primary: #4f46e5; --primary-dark: #3730a3; --ink: #172033; --muted: #64748b; --line: #e2e8f0; --surface: #fff; --background: #f1f5f9; --danger: #dc2626; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; color: var(--ink); background: var(--background); font: 15px/1.5 Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        header { color: white; background: linear-gradient(135deg, #312e81, #4f46e5); box-shadow: 0 3px 12px #1e1b4b33; }
+        .header-content, main { width: min(1120px, calc(100% - 32px)); margin: auto; }
+        .header-content { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 28px 0; }
+        h1, h2, p { margin-top: 0; } h1 { margin-bottom: 4px; font-size: clamp(1.7rem, 3vw, 2.4rem); } h2 { margin-bottom: 5px; font-size: 1.2rem; }
+        .subtitle { margin: 0; color: #c7d2fe; }
+        main { padding: 28px 0 48px; }
+        .grid { display: grid; grid-template-columns: minmax(270px, 330px) 1fr; gap: 22px; align-items: start; }
+        .card { padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 8px 24px #0f172a0b; }
+        .card-header { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 18px; }
+        .muted, .hint { color: var(--muted); } .hint { margin-bottom: 18px; font-size: .9rem; }
+        label { display: block; margin: 13px 0 6px; color: #334155; font-size: .9rem; font-weight: 600; }
+        input { width: 100%; padding: 10px 12px; color: var(--ink); background: white; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; }
+        input:focus { outline: 3px solid #c7d2fe; border-color: var(--primary); }
+        button, .button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 15px; border: 0; border-radius: 8px; color: white; background: var(--primary); cursor: pointer; font: inherit; font-weight: 600; text-decoration: none; transition: background .15s, transform .15s; }
+        button:hover, .button:hover { background: var(--primary-dark); } button:active, .button:active { transform: translateY(1px); }
+        button.secondary { color: #334155; background: #e2e8f0; } button.secondary:hover { background: #cbd5e1; }
+        button.danger { color: var(--danger); background: #fee2e2; } button.danger:hover { background: #fecaca; }
+        .header-actions { display: flex; flex-wrap: wrap; gap: 10px; } .header-actions .button { background: white; color: var(--primary-dark); } .header-actions .button:hover { background: #e0e7ff; }
+        form button { width: 100%; margin-top: 18px; }
+        .message { min-height: 24px; margin: 12px 0 0; font-size: .9rem; } .message.error { color: var(--danger); } .message.success { color: #15803d; }
+        .status { padding: 8px 12px; border-radius: 999px; color: #475569; background: #f1f5f9; font-size: .85rem; white-space: nowrap; } .status.connected { color: #166534; background: #dcfce7; }
+        .table-wrap { overflow-x: auto; } table { width: 100%; border-collapse: collapse; } th, td { padding: 13px 10px; border-bottom: 1px solid var(--line); text-align: left; } th { color: var(--muted); font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; } td:last-child { text-align: right; white-space: nowrap; }
+        .actions { display: flex; justify-content: flex-end; gap: 8px; } .actions button { padding: 7px 10px; font-size: .85rem; }
+        .pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; color: var(--muted); }
+        .pagination-controls { display: flex; align-items: center; gap: 8px; } .pagination-controls button { padding: 7px 11px; } .pagination-controls button:disabled { cursor: not-allowed; opacity: .45; }
+        .page-size { display: flex; align-items: center; gap: 8px; white-space: nowrap; } .page-size select { padding: 7px 9px; border: 1px solid #cbd5e1; border-radius: 7px; color: var(--ink); background: white; font: inherit; }
+        .list-tools { display: flex; align-items: end; gap: 10px; margin-bottom: 18px; } .list-tools label { flex: 1; margin: 0; } .list-tools select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; color: var(--ink); background: white; font: inherit; } .list-tools button { padding: 10px 12px; }
+        .auth-tabs { display: flex; gap: 6px; margin-bottom: 12px; } .auth-tabs button { flex: 1; padding: 8px; color: var(--muted); background: #f1f5f9; } .auth-tabs button.active { color: white; background: var(--primary); }
+        .auth-form[hidden] { display: none; }
+        .empty, .loading { padding: 35px 10px; color: var(--muted); text-align: center; }
+        .editor { display: none; margin-bottom: 18px; padding: 16px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px; } .editor.visible { display: block; } .editor form { display: flex; align-items: end; gap: 10px; } .editor label { flex: 1; margin: 0; } .editor button { width: auto; margin: 0; }
+        @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .header-content { align-items: flex-start; flex-direction: column; } .editor form { align-items: stretch; flex-direction: column; } .editor button { width: 100%; } }
+    </style>
 </head>
 <body>
-
-    <h1>Register</h1>
-    <a href="/swagger/index.html">Swagger UI</a>
-
-    <form id="registerForm">
-
-        <label for="name">Name:</label>
-        <input type="text" name="name" placeholder="Name" required />
-        <label for="email">Email:</label>
-        <input type="text" name="email" placeholder="Email" required />
-        <label for="password">Password:</label>
-        <input type="password" name="password" placeholder="Password" required />
-        <div id="register-errors"></div>
-        <button type="submit">Register</button>
-
-    </form>
-
-    <button id="getAllMessagesBtn">Get All Messages</button>
-    <table id="messagesTable" border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>From</th>
-                <th>Text</th>
-                <th>Created At</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <div id="error-message-get-messages" style="color: red;"></div>
-
-
-        <script src="/js/script.js"></script>
+    <header>
+        <div class="header-content">
+            <div><h1>Category Manager</h1><p class="subtitle">Manage your product categories in one place.</p></div>
+            <div class="header-actions"><span id="authStatus" class="status">Not connected</span><a class="button" href="/swagger/index.html" target="_blank" rel="noopener">Open Swagger</a></div>
+        </div>
+    </header>
+    <main>
+        <div class="grid">
+            <aside class="card">
+                <h2 id="authTitle">Sign in</h2>
+                <p class="hint">Sign in or create an account to manage categories.</p>
+                <div class="auth-tabs" role="tablist"><button id="loginTab" class="active" type="button">Sign in</button><button id="registerTab" type="button">Register</button></div>
+                <form id="loginForm" class="auth-form">
+                    <label for="email">Email</label><input id="email" name="email" type="email" required placeholder="you@example.com" />
+                    <label for="password">Password</label><input id="password" name="password" type="password" required placeholder="Your password" />
+                    <button type="submit">Sign in</button>
+                </form>
+                <form id="registerForm" class="auth-form" hidden>
+                    <label for="registerName">Name</label><input id="registerName" name="name" minlength="3" required placeholder="Your name" />
+                    <label for="registerEmail">Email</label><input id="registerEmail" name="email" type="email" required placeholder="you@example.com" />
+                    <label for="registerPassword">Password</label><input id="registerPassword" name="password" type="password" minlength="6" required placeholder="At least 6 characters" />
+                    <button type="submit">Create account</button>
+                </form>
+                <p id="loginMessage" class="message" role="status"></p>
+                <button id="logoutButton" class="secondary" type="button" hidden>Sign out</button>
+            </aside>
+            <section class="card">
+                <div class="card-header"><div><h2>Categories</h2><p class="muted">Create, edit, and remove categories.</p></div><button id="refreshButton" class="secondary" type="button">Refresh</button></div>
+                <div id="editor" class="editor"><form id="categoryForm"><label for="categoryName">Category name<input id="categoryName" name="name" minlength="3" maxlength="50" required /></label><button id="saveButton" type="submit">Add category</button><button id="cancelButton" class="secondary" type="button">Cancel</button></form></div>
+                <form id="addCategoryForm" class="card" style="background:#f8fafc;box-shadow:none;margin-bottom:18px"><label for="newCategoryName">New category</label><div style="display:flex;gap:10px"><input id="newCategoryName" minlength="3" maxlength="50" required placeholder="e.g. Electronics" /><button type="submit">Add</button></div></form>
+                <div class="list-tools"><label for="categoryFilter">Filter by name<input id="categoryFilter" type="search" placeholder="Search categories" /></label><label for="categoryOrder">Order by<select id="categoryOrder"><option value="id">ID</option><option value="name">Name</option><option value="creationDate">Created date</option><option value="updateDate">Updated date</option></select></label><label for="categoryDirection">Direction<select id="categoryDirection"><option value="asc">Ascending</option><option value="desc">Descending</option></select></label><button id="clearFiltersButton" class="secondary" type="button">Clear</button></div>
+                <div id="categoryMessage" class="message" role="status"></div>
+                <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Created</th><th>Updated</th><th>Actions</th></tr></thead><tbody id="categoryRows"><tr><td colspan="5" class="loading">Sign in to load categories.</td></tr></tbody></table></div>
+                <div class="pagination"><label class="page-size" for="pageSize">Items per page<select id="pageSize"><option value="5" selected>5</option><option value="10">10</option><option value="20">20</option><option value="50">50</option></select></label><div class="pagination-controls"><button id="previousPageButton" class="secondary" type="button">Previous</button><span id="pageInfo">Page 1 of 1</span><button id="nextPageButton" class="secondary" type="button">Next</button></div></div>
+            </section>
+        </div>
+    </main>
+    <script src="/js/script.js?v=3"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MainHW.Models;
+using MainHW.Repositories;
 
 namespace MainHW.Services;
 

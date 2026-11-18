@@ -59,4 +59,6 @@ public class User
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    public string? BgFileName { get; set; } // New property to store the avatar file name
+
 }

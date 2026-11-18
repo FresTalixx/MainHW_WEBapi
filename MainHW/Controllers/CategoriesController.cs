@@ -11,11 +11,13 @@ namespace MainHW.Controllers;
 public class CategoriesController : ControllerBase
 {
     private readonly CategoryService _categoryService;
+    private readonly UploadFileService _uploadFileService;
     public readonly IMapper _mapper;
 
-    public CategoriesController(CategoryService categoryService, IMapper mapper)
+    public CategoriesController(CategoryService categoryService, UploadFileService uploadFileService, IMapper mapper)
     {
         _categoryService = categoryService;
+        _uploadFileService = uploadFileService;
         _mapper = mapper;
     }
 
@@ -48,9 +50,13 @@ public class CategoriesController : ControllerBase
     /// <param name="request">The category details.</param>
     /// <returns>An <see cref="OkObjectResult"/> containing the new category</returns>
     [HttpPost]
-    public async Task<IActionResult> AddNewCategory(CategoryDto request)
+    public async Task<IActionResult> AddNewCategory([FromForm] CategoryDto request)
     {
         var newCategory = _mapper.Map<Category>(request);
+        if (request.File != null)
+        {
+            newCategory.BgFileName = await _uploadFileService.UploadFileAsync(request.File);
+        }
         await _categoryService.AddNewCategory(newCategory);
         return Ok(newCategory);
     }
@@ -62,7 +68,7 @@ public class CategoriesController : ControllerBase
     /// <param name="request">The updated category data.</param>
     /// <returns>An action result containing the updated category</returns>
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCategory(int id, CategoryDto request)
+    public async Task<IActionResult> UpdateCategory(int id, [FromForm] CategoryDto request)
     {
         var category = await _categoryService.GetCategoryById(id);
         if (category == null)
@@ -71,6 +77,10 @@ public class CategoriesController : ControllerBase
         }
 
         _mapper.Map(request, category);
+        if (request.File != null)
+        {
+            category.BgFileName = await _uploadFileService.UploadFileAsync(request.File);
+        }
         await _categoryService.UpdateCategory(category);
         return Ok(category);
     }

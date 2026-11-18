@@ -1,0 +1,531 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MainHW</name>
+    </assembly>
+    <members>
+        <member name="M:MainHW.Controllers.CategoriesController.GetAllCategories">
+            <summary>
+            Retrieves all categories.
+            </summary>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.OkObjectResult" /> containing the categories.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.CategoriesController.GetPaginatedCategories(MainHW.Models.DTO.PageResultRequest{MainHW.Models.DTO.CategoryFilter})">
+            <summary>
+            Retrieves a paginated list of categories.
+            </summary>
+            <param name="request">The pagination parameters.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.OkObjectResult"/> containing the paginated categories.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.CategoriesController.AddNewCategory(MainHW.Models.DTO.CategoryDto)">
+            <summary>
+            Adds a new category for the authenticated user.
+            </summary>
+            <param name="request">The category details.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.OkObjectResult"/> containing the new category</returns>
+        </member>
+        <member name="M:MainHW.Controllers.CategoriesController.UpdateCategory(System.Int32,MainHW.Models.DTO.CategoryDto)">
+            <summary>
+            Updates an existing category.
+            </summary>
+            <param name="id">The identifier of the category to update.</param>
+            <param name="request">The updated category data.</param>
+            <returns>An action result containing the updated category</returns>
+        </member>
+        <member name="M:MainHW.Controllers.CategoriesController.DeleteCategory(System.Int32)">
+            <summary>
+            Deletes a category by its identifier.
+            </summary>
+            <param name="id">The identifier of the category to delete.</param>
+            <returns>a not found response if the category does not exist;
+            otherwise, a no content response.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.MessageController.GetAllMessagesAsync">
+            <summary>
+            Gets all messages.
+            </summary>
+            <returns>A result containing the collection of messages.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.MessageController.SearchMessagesAsync(MainHW.Models.SearchMessage)">
+            <summary>
+            Searches for messages matching the specified criteria.
+            </summary>
+            <param name="searchMessage">The search criteria, including the sender and date filters.</param>
+            <returns>An action result containing the matching messages, or a bad request response if the sender is not specified or
+            the date is in the future.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.MessageController.GetMessageByIdAsync(System.Int32)">
+            <summary>
+            Retrieves a message by its identifier.
+            </summary>
+            <param name="id">The identifier of the message to retrieve.</param>
+            <returns>An action result containing the message if found; otherwise, a 404 Not Found response.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.MessageController.AddMessageAsync(MainHW.Models.DTO.MessageAddRequest)">
+            <summary>
+            Adds a message for the authenticated user.
+            </summary>
+            <param name="request">The message to add. The sender email must match the email associated with the authorization token.</param>
+            <returns>An action result containing the added message, or an error response if the user is unauthenticated or the sender
+            email does not match.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.MessageController.UpdateMessageAsync(System.Int32,MainHW.Models.Message)">
+            <summary>
+            Updates a message.
+            </summary>
+            <param name="id">The identifier of the message to update.</param>
+            <param name="updatedMessage">The updated message.</param>
+            <returns>An action result containing the updated message, or NotFound if the message does not exist.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.MessageController.DeleteMessageAsync(System.Int32)">
+            <summary>
+            Deletes a message.
+            </summary>
+            <param name="id">The unique identifier of the message to delete.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.OkResult"/> if the message is deleted; otherwise, an <see cref="T:Microsoft.AspNetCore.Mvc.NotFoundResult"/>.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.OrderController.GetAllOrdersAsync">
+            <summary>
+            Retrieves all orders.
+            </summary>
+            <returns>An action result containing the collection of order DTOs.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.OrderController.AddOrderAsync(MainHW.Models.DTO.OrderDto)">
+            <summary>
+            Adds a new order.
+            </summary>
+            <param name="orderDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MainHW.Controllers.OrderController.UpdateOrderStatusAsync(System.Int32,System.Boolean)">
+            <summary>
+            Updates an order's completion status.
+            </summary>
+            <param name="id">The order identifier.</param>
+            <param name="isCompleted">A value indicating whether the order is completed.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NotFoundResult"/> if the order is not found; otherwise, a <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/>.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.OrderController.UpdateOrderQuantityAsync(System.Int32,System.Int32)">
+            <summary>
+            Updates the quantity of an order.
+            </summary>
+            <param name="id">The identifier of the order to update.</param>
+            <param name="newQuantity">The new quantity for the order.</param>
+            <returns>A <see cref="T:Microsoft.AspNetCore.Mvc.NotFoundResult"/> if the order does not exist; otherwise, a <see cref="T:Microsoft.AspNetCore.Mvc.NoContentResult"/>.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.UserController.RegisterUserAsync(MainHW.Models.DTO.UserRegisterRequest)">
+            <summary>
+            Registers a new user and returns an authentication token.
+            </summary>
+            <param name="newUser">The user registration details.</param>
+            <returns>An action result containing the authentication token for the registered user, or a bad request response if
+            registration fails.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.UserController.AuthenticateUserAsync(MainHW.Models.DTO.UserLoginRequest)">
+            <summary>
+            Authenticates a user and returns an access token.
+            </summary>
+            <param name="loginUser">The user's email address and password.</param>
+            <returns>An action result containing the user's access token, or an unauthorized response if the email address or
+            password is invalid.</returns>
+        </member>
+        <member name="M:MainHW.Controllers.UserController.GetAllUsersAsync">
+            <summary>
+            Retrieves all users.
+            </summary>
+            <returns>An action result containing the collection of users.</returns>
+        </member>
+        <member name="T:MainHW.Migrations.Init">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.Init.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.Init.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:MainHW.Migrations.added_orders">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.added_orders.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.added_orders.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.added_orders.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:MainHW.Migrations.addedCategories">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.addedCategories.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.addedCategories.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.addedCategories.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:MainHW.Migrations.addedbgfiles">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.addedbgfiles.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.addedbgfiles.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MainHW.Migrations.addedbgfiles.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:MainHW.Models.Category">
+            <summary>
+            Represents a category.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Category.Id">
+            <summary>
+            Gets or sets the unique identifier.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Category.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+            <remarks>The value must be between 3 and 50 characters long.</remarks>
+        </member>
+        <member name="P:MainHW.Models.Category.CreationDate">
+            <summary>
+            Gets or sets the creation date.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Category.UpdateDate">
+            <summary>
+            Gets or sets the date and time when the entity was last updated.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.CategoryDto.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="T:MainHW.Models.DTO.MessageAddRequest">
+            <summary>
+            Represents a request to add a message.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.MessageAddRequest.Text">
+            <summary>
+            Gets or sets the text.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.MessageAddRequest.From">
+            <summary>
+            Gets or sets the source.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.OrderDto.Id">
+            <summary>
+            Gets or sets the identifier.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.OrderDto.DateTime">
+            <summary>
+            Gets or sets the date and time.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.OrderDto.Quantity">
+            <summary>
+            Gets or sets the quantity.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.OrderDto.IsCompleted">
+            <summary>
+            Gets or sets a value indicating whether the operation has completed.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.OrderDto.TotalCost">
+            <summary>
+            Gets or sets the total cost.
+            </summary>
+        </member>
+        <member name="T:MainHW.Models.DTO.UserLoginRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserLoginRequest.Email">
+            <summary>
+            Gets or sets the email address.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserLoginRequest.Password">
+            <summary>
+            Gets or sets the password.
+            </summary>
+        </member>
+        <member name="T:MainHW.Models.DTO.UserRegisterRequest">
+            <summary>
+            Represents the data required to register a user.
+            </summary>
+            <remarks>The name must be between 3 and 100 characters, the email address must be valid, and the password must
+            contain at least 6 characters.</remarks>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserRegisterRequest.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserRegisterRequest.Email">
+            <summary>
+            Gets or sets the email address.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserRegisterRequest.Password">
+            <summary>
+            Gets or sets the password.
+            </summary>
+            <remarks>The value must contain at least six characters. Store passwords securely using appropriate
+            hashing and salting.</remarks>
+        </member>
+        <member name="T:MainHW.Models.DTO.UserToken">
+            <summary>
+            Represents a user token.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserToken.Token">
+            <summary>
+            Gets or sets the token.
+            </summary>
+        </member>
+        <member name="T:MainHW.Models.DTO.UserViewDto">
+            <summary>
+            Represents user information for display.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserViewDto.Id">
+            <summary>
+            Gets or sets the identifier.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserViewDto.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserViewDto.Email">
+            <summary>
+            Gets or sets the email address.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserViewDto.IsActive">
+            <summary>
+            Gets or sets a value indicating whether the item is active.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserViewDto.RoleId">
+            <summary>
+            Gets or sets the identifier of the role.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserViewDto.CreatedAt">
+            <summary>
+            Gets or sets the date and time when the entity was created, in Coordinated Universal Time (UTC).
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.DTO.UserViewDto.BgFileName">
+            <summary>
+            Gets or sets the user's background image path.
+            </summary>
+        </member>
+        <member name="T:MainHW.Models.Message">
+            <summary>
+            Represents a message containing a sender, text, identifier, and date and time.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Message.Id">
+            <summary>
+            Gets or sets the unique identifier.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Message.From">
+            <summary>
+            Gets or sets the sender's email address.
+            </summary>
+            <remarks>The value must be at least three characters long and in a valid email address
+            format.</remarks>
+        </member>
+        <member name="P:MainHW.Models.Message.Text">
+            <summary>
+            Gets or sets the text.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Message.DateTime">
+            <summary>
+            Gets or sets the date and time.
+            </summary>
+        </member>
+        <member name="T:MainHW.Models.Order">
+            <summary>
+             Represents an order.
+             </summary>
+        </member>
+        <member name="P:MainHW.Models.Order.Id">
+            <summary>
+            Gets or sets the order number.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Order.DateTime">
+            <summary>
+            Gets or sets the date and time when the order was placed.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Order.Quantity">
+            <summary>
+            Gets or sets the quantity.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Order.TotalCost">
+            <summary>
+            Gets or sets the total cost.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Order.IsCompleted">
+            <summary>
+            Gets or sets a value indicating whether the operation is complete.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.Order.Comment">
+            <summary>
+            Gets or sets the comment.
+            </summary>
+        </member>
+        <member name="T:MainHW.Models.SearchMessage">
+            <summary>
+            Represents a search message.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.SearchMessage.From">
+            <summary>
+            Gets or sets the message sender.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.SearchMessage.DateTime">
+            <summary>
+            Gets or sets the date and time.
+            </summary>
+        </member>
+        <member name="T:MainHW.Models.User">
+            <summary>
+            Represents a user account.
+            </summary>
+            <remarks>Passwords should be stored securely using hashing and salting; plaintext passwords should not be
+            retained.</remarks>
+        </member>
+        <member name="P:MainHW.Models.User.Id">
+            <summary>
+            Gets or sets the identifier.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.User.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.User.Email">
+            <summary>
+            Gets or sets the email address.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.User.Password">
+            <summary>
+            Gets or sets the password.
+            </summary>
+            <remarks>Store passwords securely using hashing and salting; do not retain plaintext values.</remarks>
+        </member>
+        <member name="P:MainHW.Models.User.Token">
+            <summary>
+            Gets or sets the token.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.User.IsActive">
+            <summary>
+            Indicates whether the object is active.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.User.RoleId">
+            <summary>
+            Gets or sets the role identifier.
+            </summary>
+        </member>
+        <member name="P:MainHW.Models.User.CreatedAt">
+            <summary>
+            Gets or sets the creation timestamp.
+            </summary>
+        </member>
+        <member name="T:MainHW.Repositories.OrderRepository">
+            <summary>
+            Provides operations for retrieving, creating, updating, and deleting orders.
+            </summary>
+        </member>
+        <member name="M:MainHW.Repositories.OrderRepository.#ctor(MainHW.Models.ApiDbContext)">
+            <summary>
+            Provides operations for retrieving, creating, updating, and deleting orders.
+            </summary>
+        </member>
+        <member name="T:Program">
+            <summary>
+            Auto-generated public partial Program class for top-level statement apps.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Type)">
+            <summary>
+            Generates a documentation comment ID for a type.
+            Example: T:Namespace.Outer+Inner`1 becomes T:Namespace.Outer.Inner`1
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Reflection.PropertyInfo)">
+            <summary>
+            Generates a documentation comment ID for a property.
+            Example: P:Namespace.ContainingType.PropertyName or for an indexer P:Namespace.ContainingType.Item(System.Int32)
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Type,System.String)">
+            <summary>
+            Generates a documentation comment ID for a property given its container type and property name.
+            Example: P:Namespace.ContainingType.PropertyName
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Reflection.MethodInfo)">
+            <summary>
+            Generates a documentation comment ID for a method (or constructor).
+            For example:
+              M:Namespace.ContainingType.MethodName(ParamType1,ParamType2)~ReturnType
+              M:Namespace.ContainingType.#ctor(ParamType)
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.GetTypeDocId(System.Type,System.Boolean,System.Boolean)">
+            <summary>
+            Generates a documentation ID string for a type.
+            This method handles nested types (replacing '+' with '.'),
+            generic types, arrays, pointers, by-ref types, and generic parameters.
+            The <paramref name="includeGenericArguments"/> flag controls whether
+            constructed generic type arguments are emitted, while <paramref name="omitGenericArity"/>
+            controls whether the generic arity marker (e.g. "`1") is appended.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.NormalizeDocId(System.String)">
+            <summary>
+            Normalizes a documentation comment ID to match the compiler-style format.
+            Strips the return type suffix for ordinary methods but retains it for conversion operators.
+            </summary>
+            <param name="docId">The documentation comment ID to normalize.</param>
+            <returns>The normalized documentation comment ID.</returns>
+        </member>
+    </members>
+</doc>

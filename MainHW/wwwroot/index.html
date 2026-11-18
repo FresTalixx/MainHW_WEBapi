@@ -7,7 +7,7 @@
     <style>
         :root { color-scheme: light; --primary: #4f46e5; --primary-dark: #3730a3; --ink: #172033; --muted: #64748b; --line: #e2e8f0; --surface: #fff; --background: #f1f5f9; --danger: #dc2626; }
         * { box-sizing: border-box; }
-        body { margin: 0; min-height: 100vh; color: var(--ink); background: var(--background); font: 15px/1.5 Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        body { margin: 0; min-height: 100vh; color: var(--ink); background-color: var(--background); background-position: center; background-repeat: no-repeat; background-size: cover; background-attachment: fixed; font: 15px/1.5 Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
         header { color: white; background: linear-gradient(135deg, #312e81, #4f46e5); box-shadow: 0 3px 12px #1e1b4b33; }
         .header-content, main { width: min(1120px, calc(100% - 32px)); margin: auto; }
         .header-content { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 28px 0; }
@@ -38,7 +38,9 @@
         .auth-tabs { display: flex; gap: 6px; margin-bottom: 12px; } .auth-tabs button { flex: 1; padding: 8px; color: var(--muted); background: #f1f5f9; } .auth-tabs button.active { color: white; background: var(--primary); }
         .auth-form[hidden] { display: none; }
         .empty, .loading { padding: 35px 10px; color: var(--muted); text-align: center; }
-        .editor { display: none; margin-bottom: 18px; padding: 16px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px; } .editor.visible { display: block; } .editor form { display: flex; align-items: end; gap: 10px; } .editor label { flex: 1; margin: 0; } .editor button { width: auto; margin: 0; }
+         .editor { display: none; margin-bottom: 18px; padding: 16px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px; } .editor.visible { display: block; } .editor form { display: flex; align-items: end; gap: 10px; } .editor label { flex: 1; margin: 0; } .editor button { width: auto; margin: 0; }
+         .category-image-cell { min-width: 150px; } .category-thumbnail { display: block; width: 52px; height: 52px; margin-bottom: 6px; border-radius: 8px; object-fit: cover; background: #e2e8f0; } .category-upload-input { display: none; } .category-upload-button { padding: 6px 9px; font-size: .8rem; }
+         .new-category-preview { display: block; width: 72px; height: 72px; margin-top: 8px; border-radius: 8px; object-fit: cover; background: #e2e8f0; }
         @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .header-content { align-items: flex-start; flex-direction: column; } .editor form { align-items: stretch; flex-direction: column; } .editor button { width: 100%; } }
     </style>
 </head>
@@ -68,18 +70,28 @@
                 </form>
                 <p id="loginMessage" class="message" role="status"></p>
                 <button id="logoutButton" class="secondary" type="button" hidden>Sign out</button>
+                 <div id="backgroundUploadPanel" class="card" style="background:#f8fafc;box-shadow:none;margin-top:18px" hidden>
+                     <h2>Background image</h2>
+                     <p class="hint">Attach an image to personalize the page background.</p>
+                     <form id="backgroundForm">
+                         <label for="backgroundFile">Image file</label>
+                         <input id="backgroundFile" name="file" type="file" accept="image/*" required />
+                         <button type="submit">Upload image</button>
+                     </form>
+                     <p id="backgroundMessage" class="message" role="status"></p>
+                 </div>
             </aside>
             <section class="card">
                 <div class="card-header"><div><h2>Categories</h2><p class="muted">Create, edit, and remove categories.</p></div><button id="refreshButton" class="secondary" type="button">Refresh</button></div>
-                <div id="editor" class="editor"><form id="categoryForm"><label for="categoryName">Category name<input id="categoryName" name="name" minlength="3" maxlength="50" required /></label><button id="saveButton" type="submit">Add category</button><button id="cancelButton" class="secondary" type="button">Cancel</button></form></div>
-                <form id="addCategoryForm" class="card" style="background:#f8fafc;box-shadow:none;margin-bottom:18px"><label for="newCategoryName">New category</label><div style="display:flex;gap:10px"><input id="newCategoryName" minlength="3" maxlength="50" required placeholder="e.g. Electronics" /><button type="submit">Add</button></div></form>
+                <div id="editor" class="editor"><form id="categoryForm"><label for="categoryName">Category name<input id="categoryName" name="name" minlength="3" maxlength="50" required /></label><label for="categoryFile">Attachment<input id="categoryFile" name="file" type="file" accept="image/*" /></label><button id="saveButton" type="submit">Add category</button><button id="cancelButton" class="secondary" type="button">Cancel</button></form></div>
+                <form id="addCategoryForm" class="card" style="background:#f8fafc;box-shadow:none;margin-bottom:18px"><label for="newCategoryName">New category</label><div style="display:flex;gap:10px"><input id="newCategoryName" name="name" minlength="3" maxlength="50" required placeholder="e.g. Electronics" /><input id="newCategoryFile" name="file" type="file" accept="image/*" /><button type="submit">Add</button></div><img id="newCategoryPreview" class="new-category-preview" alt="Selected category image preview" hidden /></form>
                 <div class="list-tools"><label for="categoryFilter">Filter by name<input id="categoryFilter" type="search" placeholder="Search categories" /></label><label for="categoryOrder">Order by<select id="categoryOrder"><option value="id">ID</option><option value="name">Name</option><option value="creationDate">Created date</option><option value="updateDate">Updated date</option></select></label><label for="categoryDirection">Direction<select id="categoryDirection"><option value="asc">Ascending</option><option value="desc">Descending</option></select></label><button id="clearFiltersButton" class="secondary" type="button">Clear</button></div>
                 <div id="categoryMessage" class="message" role="status"></div>
-                <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Created</th><th>Updated</th><th>Actions</th></tr></thead><tbody id="categoryRows"><tr><td colspan="5" class="loading">Sign in to load categories.</td></tr></tbody></table></div>
+                 <div class="table-wrap"><table><thead><tr><th>Image</th><th>ID</th><th>Name</th><th>Created</th><th>Updated</th><th>Actions</th></tr></thead><tbody id="categoryRows"><tr><td colspan="6" class="loading">Sign in to load categories.</td></tr></tbody></table></div>
                 <div class="pagination"><label class="page-size" for="pageSize">Items per page<select id="pageSize"><option value="5" selected>5</option><option value="10">10</option><option value="20">20</option><option value="50">50</option></select></label><div class="pagination-controls"><button id="previousPageButton" class="secondary" type="button">Previous</button><span id="pageInfo">Page 1 of 1</span><button id="nextPageButton" class="secondary" type="button">Next</button></div></div>
             </section>
         </div>
     </main>
-    <script src="/js/script.js?v=3"></script>
+    <script src="/js/script.js?v=6"></script>
 </body>
 </html>

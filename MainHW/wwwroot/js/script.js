@@ -8,6 +8,14 @@ const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 const loginMessage = document.getElementById('loginMessage');
 const logoutButton = document.getElementById('logoutButton');
+const backgroundUploadPanel = document.getElementById('backgroundUploadPanel');
+const backgroundForm = document.getElementById('backgroundForm');
+const backgroundFile = document.getElementById('backgroundFile');
+const backgroundMessage = document.getElementById('backgroundMessage');
+const newCategoryFile = document.getElementById('newCategoryFile');
+const newCategoryPreview = document.getElementById('newCategoryPreview');
+const categoryFile = document.getElementById('categoryFile');
+let newCategoryPreviewUrl = null;
 const authStatus = document.getElementById('authStatus');
 const categoryRows = document.getElementById('categoryRows');
 const categoryMessage = document.getElementById('categoryMessage');
@@ -52,6 +60,7 @@ async function register(event) {
         if (!result?.token) throw new Error('The registration response did not contain a token.');
         localStorage.setItem(tokenKey, result.token);
         updateAuthState();
+        await loadUserBackgroundImage();
         registerForm.reset();
         setMessage(loginMessage, 'Account created. You are now signed in.');
         await loadCategories();
@@ -69,6 +78,52 @@ function updateAuthState() {
     authStatus.textContent = isAuthenticated ? 'Connected' : 'Not connected';
     authStatus.classList.toggle('connected', isAuthenticated);
     logoutButton.hidden = !isAuthenticated;
+    backgroundUploadPanel.hidden = !isAuthenticated;
+}
+
+function setUserBackgroundImage(path) {
+    const imagePath = typeof path === 'string' ? path.trim() : '';
+
+    if (!imagePath) {
+        document.body.style.backgroundImage = '';
+        return;
+    }
+
+    const imageUrl = imagePath.startsWith('/') ? imagePath : `/uploads/${imagePath}`;
+    document.body.style.backgroundImage = `url("${imageUrl.replace(/"/g, '%22')}")`;
+}
+
+async function loadUserBackgroundImage() {
+    if (!getToken()) {
+        setUserBackgroundImage(null);
+        return;
+    }
+
+    try {
+        const user = await apiRequest('/api/user/me');
+        setUserBackgroundImage(user?.bgFileName);
+    } catch {
+        setUserBackgroundImage(null);
+    }
+}
+
+async function uploadBackgroundImage(event) {
+    event.preventDefault();
+    const file = backgroundFile.files[0];
+    if (!file || !requireAuthentication()) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    setMessage(backgroundMessage, 'Uploading…');
+
+    try {
+        await apiRequest('/api/UploadFile', { method: 'PUT', body: formData });
+        backgroundForm.reset();
+        await loadUserBackgroundImage();
+        setMessage(backgroundMessage, 'Background image uploaded.');
+    } catch (error) {
+        setMessage(backgroundMessage, error.message, true);
+    }
 }
 
 async function readResponse(response) {
@@ -94,7 +149,7 @@ async function apiRequest(path, options = {}) {
     const headers = { ...(options.headers || {}) };
     const token = getToken();
     if (token) headers['X-My-Authorization'] = token;
-    if (options.body) headers['Content-Type'] = 'application/json';
+    if (options.body && !(options.body instanceof FormData)) headers['Content-Type'] = 'application/json';
 
     const response = await fetch(path, { ...options, headers });
     if (response.status === 401) {
@@ -143,11 +198,16 @@ function renderCategoryView(resetPage = true) {
     renderCategories(getVisibleCategories());
 }
 
+function getCategoryImageUrl(path) {
+    if (typeof path !== 'string' || !path.trim()) return '';
+    return path.startsWith('/') ? path : `/uploads/${path}`;
+}
+
 function renderCategories(categories) {
     categoryRows.innerHTML = '';
     if (!categories?.length) {
         currentPage = 1;
-        categoryRows.innerHTML = '<tr><td colspan="5" class="empty">No categories found. Add the first one above.</td></tr>';
+        categoryRows.innerHTML = '<tr><td colspan="6" class="empty">No categories found. Add the first one above.</td></tr>';
         updatePagination(0);
         return;
     }
@@ -158,18 +218,60 @@ function renderCategories(categories) {
 
     pageCategories.forEach(category => {
         const row = document.createElement('tr');
+        const fileInputId = `category-file-${category.id}`;
         row.innerHTML = `
+            <td class="category-image-cell">
+                <img class="category-thumbnail" alt="">
+                <input id="${fileInputId}" class="category-upload-input" type="file" accept="image/*">
+                <label class="button category-upload-button" for="${fileInputId}">Upload image</label>
+            </td>
             <td>${category.id}</td>
             <td><strong></strong></td>
             <td>${formatDate(category.creationDate)}</td>
             <td>${formatDate(category.updateDate)}</td>
             <td><div class="actions"><button class="secondary edit-button" type="button">Edit</button><button class="danger delete-button" type="button">Delete</button></div></td>`;
         row.querySelector('strong').textContent = category.name;
+        const imageUrl = getCategoryImageUrl(category.bgFileName);
+        const thumbnail = row.querySelector('.category-thumbnail');
+        if (imageUrl) {
+            thumbnail.src = imageUrl;
+            thumbnail.alt = `${category.name} image`;
+            const fileLink = document.createElement('a');
+            fileLink.href = imageUrl;
+            fileLink.textContent = 'Open file';
+            fileLink.target = '_blank';
+            fileLink.rel = 'noopener';
+            row.querySelector('.category-image-cell').appendChild(fileLink);
+        } else {
+            thumbnail.hidden = true;
+        }
+        const fileInput = row.querySelector('.category-upload-input');
+        fileInput.addEventListener('change', () => uploadCategoryImage(category, fileInput));
         row.querySelector('.edit-button').addEventListener('click', () => startEditing(category));
         row.querySelector('.delete-button').addEventListener('click', () => deleteCategory(category.id, category.name));
         categoryRows.appendChild(row);
     });
     updatePagination(pageCount);
+}
+
+async function uploadCategoryImage(category, fileInput) {
+    const file = fileInput.files[0];
+    if (!file || !requireAuthentication()) return;
+
+    const formData = new FormData();
+    formData.append('name', category.name);
+    formData.append('file', file);
+    setMessage(categoryMessage, `Uploading image for ${category.name}…`);
+
+    try {
+        await apiRequest(`/api/categories/${category.id}`, { method: 'PUT', body: formData });
+        setMessage(categoryMessage, `Image uploaded for ${category.name}.`);
+        await loadCategories();
+    } catch (error) {
+        setMessage(categoryMessage, error.message, true);
+    } finally {
+        fileInput.value = '';
+    }
 }
 
 function updatePagination(pageCount) {
@@ -181,13 +283,13 @@ function updatePagination(pageCount) {
 
 async function loadCategories() {
     if (!requireAuthentication()) return;
-    categoryRows.innerHTML = '<tr><td colspan="5" class="loading">Loading categories…</td></tr>';
+    categoryRows.innerHTML = '<tr><td colspan="6" class="loading">Loading categories…</td></tr>';
     setMessage(categoryMessage, '');
     try {
         allCategories = await apiRequest('/api/categories');
         renderCategoryView();
     } catch (error) {
-        categoryRows.innerHTML = '<tr><td colspan="5" class="empty">Unable to load categories.</td></tr>';
+        categoryRows.innerHTML = '<tr><td colspan="6" class="empty">Unable to load categories.</td></tr>';
         setMessage(categoryMessage, error.message, true);
     }
 }
@@ -204,6 +306,7 @@ async function signIn(event) {
         if (!result?.token) throw new Error('The login response did not contain a token.');
         localStorage.setItem(tokenKey, result.token);
         updateAuthState();
+        await loadUserBackgroundImage();
         setMessage(loginMessage, 'Signed in successfully.');
         await loadCategories();
     } catch (error) {
@@ -215,8 +318,12 @@ async function addCategory(event) {
     event.preventDefault();
     if (!requireAuthentication()) return;
     try {
-        await apiRequest('/api/categories', { method: 'POST', body: JSON.stringify({ name: newCategoryName.value.trim() }) });
-        newCategoryName.value = '';
+        const formData = new FormData();
+        formData.append('name', newCategoryName.value.trim());
+        if (newCategoryFile.files[0]) formData.append('file', newCategoryFile.files[0]);
+        await apiRequest('/api/categories', { method: 'POST', body: formData });
+        addCategoryForm.reset();
+        updateNewCategoryPreview();
         setMessage(categoryMessage, 'Category added.');
         await loadCategories();
     } catch (error) {
@@ -224,9 +331,28 @@ async function addCategory(event) {
     }
 }
 
+function updateNewCategoryPreview() {
+    if (newCategoryPreviewUrl) {
+        URL.revokeObjectURL(newCategoryPreviewUrl);
+        newCategoryPreviewUrl = null;
+    }
+
+    const file = newCategoryFile.files[0];
+    if (!file || !file.type.startsWith('image/')) {
+        newCategoryPreview.removeAttribute('src');
+        newCategoryPreview.hidden = true;
+        return;
+    }
+
+    newCategoryPreviewUrl = URL.createObjectURL(file);
+    newCategoryPreview.src = newCategoryPreviewUrl;
+    newCategoryPreview.hidden = false;
+}
+
 function startEditing(category) {
     editingCategoryId = category.id;
     categoryName.value = category.name;
+    categoryFile.value = '';
     saveButton.textContent = 'Save changes';
     editor.classList.add('visible');
     categoryName.focus();
@@ -235,6 +361,7 @@ function startEditing(category) {
 function stopEditing() {
     editingCategoryId = null;
     categoryName.value = '';
+    categoryFile.value = '';
     saveButton.textContent = 'Add category';
     editor.classList.remove('visible');
 }
@@ -243,7 +370,10 @@ async function saveCategory(event) {
     event.preventDefault();
     if (!requireAuthentication() || editingCategoryId === null) return;
     try {
-        await apiRequest(`/api/categories/${editingCategoryId}`, { method: 'PUT', body: JSON.stringify({ name: categoryName.value.trim() }) });
+        const formData = new FormData();
+        formData.append('name', categoryName.value.trim());
+        if (categoryFile.files[0]) formData.append('file', categoryFile.files[0]);
+        await apiRequest(`/api/categories/${editingCategoryId}`, { method: 'PUT', body: formData });
         stopEditing();
         setMessage(categoryMessage, 'Category updated.');
         await loadCategories();
@@ -265,16 +395,19 @@ async function deleteCategory(id, name) {
 
 loginForm.addEventListener('submit', signIn);
 registerForm.addEventListener('submit', register);
+backgroundForm.addEventListener('submit', uploadBackgroundImage);
 document.getElementById('loginTab').addEventListener('click', () => showAuthForm('login'));
 document.getElementById('registerTab').addEventListener('click', () => showAuthForm('register'));
 logoutButton.addEventListener('click', () => {
     localStorage.removeItem(tokenKey);
+    setUserBackgroundImage(null);
     stopEditing();
     updateAuthState();
-    categoryRows.innerHTML = '<tr><td colspan="5" class="loading">Sign in to load categories.</td></tr>';
+    categoryRows.innerHTML = '<tr><td colspan="6" class="loading">Sign in to load categories.</td></tr>';
     setMessage(loginMessage, 'Signed out.');
 });
 addCategoryForm.addEventListener('submit', addCategory);
+newCategoryFile.addEventListener('change', updateNewCategoryPreview);
 categoryForm.addEventListener('submit', saveCategory);
 document.getElementById('cancelButton').addEventListener('click', stopEditing);
 document.getElementById('refreshButton').addEventListener('click', loadCategories);
@@ -306,4 +439,7 @@ document.getElementById('clearFiltersButton').addEventListener('click', () => {
 });
 
 updateAuthState();
-if (getToken()) loadCategories();
+if (getToken()) {
+    loadUserBackgroundImage();
+    loadCategories();
+}

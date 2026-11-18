@@ -22,6 +22,7 @@ builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<UploadFileService>();
 
 builder.Services.AddControllers();
 

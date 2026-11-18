@@ -6,4 +6,6 @@ public class CategoryDto
     /// Gets or sets the name.
     /// </summary>
     public string Name { get; set; } = string.Empty;
+
+    public IFormFile? File { get; set; }
 }

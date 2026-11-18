@@ -11,11 +11,13 @@ namespace MainHW.Controllers;
 public class UserController : ControllerBase
 {
     private readonly UserService _userService;
+    private readonly UploadFileService _uploadFileService;
     private readonly IMapper _mapper;
 
-    public UserController(UserService userService, IMapper mapper)
+    public UserController(UserService userService, UploadFileService uploadFileService, IMapper mapper)
     {
         _userService = userService;
+        _uploadFileService = uploadFileService;
         _mapper = mapper;
     }
 
@@ -80,9 +82,32 @@ public class UserController : ControllerBase
             Name = u.Name,
             Email = u.Email,
             IsActive = u.IsActive,
-            RoleId = u.RoleId
+            RoleId = u.RoleId,
+            CreatedAt = u.CreatedAt,
+            BgFileName = u.BgFileName
         }).ToList();
         return Ok(userDtos);
+    }
+
+    [HttpGet("me")]
+    public ActionResult<UserViewDto> GetCurrentUser()
+    {
+        var user = HttpContext.Items["User"] as User;
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(new UserViewDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            IsActive = user.IsActive,
+            RoleId = user.RoleId,
+            CreatedAt = user.CreatedAt,
+            BgFileName = user.BgFileName
+        });
     }
 
 

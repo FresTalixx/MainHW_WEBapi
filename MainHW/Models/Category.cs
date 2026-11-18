@@ -29,4 +29,6 @@ public class Category
     /// </summary>
     public DateTime? UpdateDate { get; set; }
 
+    public string? BgFileName { get; set; } // New property to store the background file name
+
 }

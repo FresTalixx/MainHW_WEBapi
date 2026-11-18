@@ -9,11 +9,13 @@ namespace MainHW.Services;
 public class UserService
 {
     private readonly UserRepository _userRepository;
+    private readonly UploadFileService _uploadFileService;
     private readonly IMapper _mapper;
 
-    public UserService(UserRepository _userRepository, IMapper mapper)
+    public UserService(UserRepository _userRepository, UploadFileService uploadFileService, IMapper mapper)
     {
         this._userRepository = _userRepository;
+        this._uploadFileService = uploadFileService;
         this._mapper = mapper;
     }
 
@@ -37,6 +39,12 @@ public class UserService
         newUser.IsActive = true; // Set the user as active by default
         newUser.RoleId = Roles.User; // Assign the default role (User)
 
+        if (request.BgFile != null)
+        {
+            var filename = await _uploadFileService.UploadFileAsync(request.BgFile);
+            newUser.BgFileName = filename;
+        }
+
         newUser.Id = users.Any() ? users.Max(u => u.Id) + 1 : 1;
         _userRepository.Add(newUser);
         await _userRepository.SaveChangesAsync();
@@ -47,6 +55,14 @@ public class UserService
     {
         var users = await _userRepository.GetAllAsync();
         var user = users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase) && u.Password == password);
+        return user;
+    }
+
+    public async Task<User> AddFileToUser(User user, IFormFile file)
+    {
+        var filename = await _uploadFileService.UploadFileAsync(file);
+        user.BgFileName = filename;
+        await _userRepository.SaveChangesAsync();
         return user;
     }
 
@@ -95,5 +111,11 @@ public class UserService
     {
         var users = await _userRepository.GetAllAsync();
         return users.FirstOrDefault(u => u.Token == token);
+    }
+
+    public async Task UpdateBackgroundFileAsync(User user, string fileName)
+    {
+        user.BgFileName = fileName;
+        await _userRepository.SaveChangesAsync();
     }
 }

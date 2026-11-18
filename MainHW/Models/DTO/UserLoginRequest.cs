@@ -20,4 +20,9 @@ public class UserLoginRequest
     /// </summary>
     [Required(ErrorMessage = "Password is required.")]
     public string Password { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the background file.
+    /// </summary>
+    public IFormFile? BgFile { get; set; } 
 }

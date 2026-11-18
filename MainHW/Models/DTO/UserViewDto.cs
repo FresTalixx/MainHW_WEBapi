@@ -34,4 +34,9 @@ public class UserViewDto
     /// Gets or sets the date and time when the entity was created, in Coordinated Universal Time (UTC).
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Gets or sets the user's background image path.
+    /// </summary>
+    public string? BgFileName { get; set; }
 }

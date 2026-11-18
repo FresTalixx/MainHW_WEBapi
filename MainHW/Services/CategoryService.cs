@@ -8,6 +8,7 @@ namespace MainHW.Services;
 public class CategoryService
 {
     private readonly CategoryRepository _categoryRepository;
+    
 
     public CategoryService(CategoryRepository categoryRepository)
     {
@@ -49,6 +50,18 @@ public class CategoryService
         return categories;
     }
 
+    public async Task UpdateBgAsync(string filename, int categoryId)
+    {
+        var category = await _categoryRepository.GetByIdAsync(categoryId);
+        if (category == null)
+        {
+            throw new ArgumentException("Category not found.");
+        }
+
+        category.BgFileName = filename;
+        await _categoryRepository.SaveChangesAsync();
+    }
+
     public async Task<PaginetadResult<Category>> GetPaginatedCategories(PageResultRequest<CategoryFilter> request)
     {
         var paginatedResult = await _categoryRepository.GetPaginatedAsync(
@@ -75,6 +88,7 @@ public class CategoryService
             return null;
         }
         existingCategory.Name = updatedCategory.Name;
+        existingCategory.BgFileName = updatedCategory.BgFileName;
         existingCategory.UpdateDate = DateTime.Now;
         await _categoryRepository.SaveChangesAsync();
         return existingCategory;

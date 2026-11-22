@@ -4,6 +4,9 @@ using MainHW.Services;
 using MainHW.Middleware;
 using Microsoft.EntityFrameworkCore;
 using MainHW.Repositories;
+using FluentValidation;
+using MainHW.Models.Validation;
+using MainHW.Errors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +29,16 @@ builder.Services.AddScoped<UploadFileService>();
 
 builder.Services.AddControllers();
 
+builder.Services.AddControllers(o =>
+{
+    // o.Filters.Add<FluentValidationActionFilter>();
+})
+    .AddJsonOptions(o =>
+        o.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
+
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExeptionHandler>();
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddAutoMapper(c =>
@@ -34,10 +47,13 @@ builder.Services.AddAutoMapper(c =>
 }, typeof(Program));
 
 builder.Services.AddScoped<IRepository<User>, UserRepository>();
+builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterValidator>();
 
 // TODO налашутвання роботи з кодуванням JSON
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

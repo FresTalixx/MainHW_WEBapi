@@ -46,6 +46,7 @@ public class CategoryService
 
     public async Task<ICollection<Category>> GetAllCategories()
     {
+
         var categories = await _categoryRepository.GetAllAsync();
         return categories;
     }
@@ -72,6 +73,26 @@ public class CategoryService
 
         return paginatedResult;
     }
+
+    public async Task<bool> DeleteOldImageCategory(int categoryId)
+    {
+        var category = await _categoryRepository.GetByIdAsync(categoryId);
+        if (category == null)
+        {
+            return false;
+        }
+        if (!string.IsNullOrEmpty(category.BgFileName))
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", category.BgFileName.TrimStart('/'));
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+            category.BgFileName = null;
+            await _categoryRepository.SaveChangesAsync();
+        }
+        return true;
+    }   
 
     public async Task<Category> AddNewCategory(Category newCategory)
     {
@@ -101,6 +122,7 @@ public class CategoryService
         {
             return false;
         }
+        await DeleteOldImageCategory(id);
         _categoryRepository.Remove(existingCategory);
         await _categoryRepository.SaveChangesAsync();
         return true;

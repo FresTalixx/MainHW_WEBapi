@@ -1,13 +1,14 @@
 @baseUrl = http://localhost:5142
-@email = test1.user@example.com
+@email = test221.user@example.com
 @password = Password123!
+@token = 7d6dfb14-70d2-4aa5-8316-a64507ecce21
 
 ### Register a new user
 POST {{baseUrl}}/api/user/register
 Content-Type: application/json
 
 {
-  "name": "Test User 1",
+  "name": "Test",
   "email": "{{email}}",
   "password": "{{password}}"
 }
@@ -43,4 +44,5 @@ Content-Type: application/json
 
 ### Get all users
 GET {{baseUrl}}/api/user/all
+X-My-Authorization: {{token}}
 Accept: application/json

@@ -42,6 +42,8 @@ abstract public class BaseRepository<T>(ApiDbContext context) : IRepository<T> w
     {
         return await context.Set<T>().FindAsync(id);
     }
+
+    
     public void Add(T entity)
     {
         context.Set<T>().Add(entity);

@@ -28,6 +28,8 @@ public class CategoriesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllCategories()
     {
+        throw new Exception("Test global exception handler");
+
         var categories = await _categoryService.GetAllCategories();
         return Ok(categories);
     }
@@ -79,6 +81,7 @@ public class CategoriesController : ControllerBase
         _mapper.Map(request, category);
         if (request.File != null)
         {
+            await _categoryService.DeleteOldImageCategory(id);
             category.BgFileName = await _uploadFileService.UploadFileAsync(request.File);
         }
         await _categoryService.UpdateCategory(category);

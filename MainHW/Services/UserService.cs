@@ -26,12 +26,7 @@ public class UserService
 
     public async Task<User> RegisterAsync(UserRegisterRequest request)
     {
-        var users = await _userRepository.GetAllAsync();
-        // email unique
-        if (users.Any(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase)))
-        {
-            throw new InvalidOperationException("A user with this email already exists.");
-        }
+
         // use mapper to map UserRegisterRequest to User
         var newUser = _mapper.Map<User>(request);
 
@@ -45,7 +40,6 @@ public class UserService
             newUser.BgFileName = filename;
         }
 
-        newUser.Id = users.Any() ? users.Max(u => u.Id) + 1 : 1;
         _userRepository.Add(newUser);
         await _userRepository.SaveChangesAsync();
         return newUser;

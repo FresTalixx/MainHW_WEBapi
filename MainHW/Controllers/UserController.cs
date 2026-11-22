@@ -4,6 +4,7 @@ using MainHW.Models.DTO;
 using MainHW.Services;
 using static System.Net.Mime.MediaTypeNames;
 using AutoMapper;
+using FluentValidation;
 namespace MainHW.Controllers;
 
 [ApiController]
@@ -13,12 +14,21 @@ public class UserController : ControllerBase
     private readonly UserService _userService;
     private readonly UploadFileService _uploadFileService;
     private readonly IMapper _mapper;
+    private readonly IValidator<UserRegisterRequest> _registerValidator;
+    private readonly IValidator<UserLoginRequest> _loginValidator;
 
-    public UserController(UserService userService, UploadFileService uploadFileService, IMapper mapper)
+    public UserController(
+        UserService userService, 
+        UploadFileService uploadFileService, 
+        IMapper mapper, 
+        IValidator<UserRegisterRequest> registerValidator,
+        IValidator<UserLoginRequest> loginValidator)
     {
         _userService = userService;
         _uploadFileService = uploadFileService;
         _mapper = mapper;
+        _registerValidator = registerValidator;
+        _loginValidator = loginValidator;
     }
 
 
@@ -32,6 +42,12 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<UserToken>> RegisterUserAsync([FromBody] UserRegisterRequest newUser)
     {
+        var validationResult = await _registerValidator.ValidateAsync(newUser);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));
+        }
+
         try
         {
             var createdUser = await _userService.RegisterAsync(newUser);
@@ -53,6 +69,11 @@ public class UserController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<UserToken>> AuthenticateUserAsync([FromBody] UserLoginRequest loginUser)
     {
+        var validationResult = await _loginValidator.ValidateAsync(loginUser);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));
+        }
         var user = await _userService.AuthenticateAsync(loginUser.Email, loginUser.Password);
         if (user == null)
         {

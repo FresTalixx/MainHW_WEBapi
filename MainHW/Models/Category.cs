@@ -16,8 +16,6 @@ public class Category
     /// Gets or sets the name.
     /// </summary>
     /// <remarks>The value must be between 3 and 50 characters long.</remarks>
-    [MinLength(3, ErrorMessage = "Name must be at least 3 characters long.")]
-    [MaxLength(50, ErrorMessage = "Name cannot exceed 50 characters.")]
     public string Name { get; set; } = null!;
     /// <summary>
     /// Gets or sets the creation date.

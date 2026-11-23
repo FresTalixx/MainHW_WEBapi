@@ -3,6 +3,7 @@ using MainHW.Models;
 using MainHW.Services;
 using MainHW.Models.DTO;
 using AutoMapper;
+using FluentValidation;
 
 namespace MainHW.Controllers;
 
@@ -12,11 +13,16 @@ public class MessageController: ControllerBase
 {
     private readonly MessageService _messageService;
     private readonly IMapper _mapper;
+    private readonly IValidator<MessageAddRequest> _messageAddRequestValidator;
 
-    public MessageController(MessageService messageService, IMapper mapper)
+    public MessageController(
+        MessageService messageService, 
+        IMapper mapper,
+        IValidator<MessageAddRequest> messageAddRequestValidator)
     {
         this._messageService = messageService;
         this._mapper = mapper;
+        this._messageAddRequestValidator = messageAddRequestValidator;
     }
 
     /// <summary>
@@ -80,6 +86,12 @@ public class MessageController: ControllerBase
     [HttpPost]
     public async Task<ActionResult<Message>> AddMessageAsync([FromBody] MessageAddRequest request)
     {
+        var validationResult = await _messageAddRequestValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));
+        }
+
         var user = HttpContext.Items["User"] as User;
         if (user == null)
         {

@@ -26,4 +26,9 @@ public class OrderDto
     /// Gets or sets the total cost.
     /// </summary>
     public int TotalCost { get; set; }
+
+    /// <summary>
+    /// Gets or sets the comment.
+    /// </summary>
+    public string? Comment { get; set; }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MainHW.Models;
 using MainHW.Models.DTO;
+using MainHW.Models.Validation;
 using MainHW.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +13,16 @@ public class OrderController : ControllerBase
 {
     private readonly OrderService _orderService;
     private readonly IMapper _mapper;
+    private readonly OrderDtoValidator _orderValidator;
 
-    public OrderController(OrderService orderService, IMapper mapper)
+    public OrderController(
+        OrderService orderService, 
+        IMapper mapper,
+        OrderDtoValidator orderValidator)
     {
         _orderService = orderService;
         _mapper = mapper;
+        _orderValidator = orderValidator;
     }
 
     /// <summary>
@@ -39,6 +45,12 @@ public class OrderController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddOrderAsync([FromBody] OrderDto orderDto)
     {
+        var validationResult = await _orderValidator.ValidateAsync(orderDto);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));
+        }
+
         var newOrder = _mapper.Map<Order>(orderDto);
         newOrder.DateTime = DateTime.Now;
         var createdOrder = await _orderService.AddOrderAsync(newOrder);

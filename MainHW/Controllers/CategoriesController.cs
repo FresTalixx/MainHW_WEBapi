@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using MainHW.Models;
 using MainHW.Models.DTO;
 using MainHW.Services;
@@ -12,12 +13,18 @@ public class CategoriesController : ControllerBase
 {
     private readonly CategoryService _categoryService;
     private readonly UploadFileService _uploadFileService;
+    private readonly IValidator<CategoryDto> _categoryValidator;
     public readonly IMapper _mapper;
 
-    public CategoriesController(CategoryService categoryService, UploadFileService uploadFileService, IMapper mapper)
+    public CategoriesController(
+        CategoryService categoryService, 
+        UploadFileService uploadFileService, 
+        IValidator<CategoryDto> categoryValidator,
+        IMapper mapper)
     {
         _categoryService = categoryService;
         _uploadFileService = uploadFileService;
+        _categoryValidator = categoryValidator;
         _mapper = mapper;
     }
 
@@ -28,7 +35,7 @@ public class CategoriesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllCategories()
     {
-        throw new Exception("Test global exception handler");
+        //throw new Exception("Test global exception handler");
 
         var categories = await _categoryService.GetAllCategories();
         return Ok(categories);
@@ -54,6 +61,12 @@ public class CategoriesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddNewCategory([FromForm] CategoryDto request)
     {
+        var validationResult = await _categoryValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));
+        }
+
         var newCategory = _mapper.Map<Category>(request);
         if (request.File != null)
         {

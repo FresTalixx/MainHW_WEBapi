@@ -31,16 +31,11 @@ public class Order
     /// <summary>
     /// Gets or sets the quantity.
     /// </summary>
-    [Range(1, int.MaxValue, ErrorMessage = "Quantity must be a positive value.")]
-    [MinLength(1, ErrorMessage = "Quantity must be at least 1 character long.")]
     public int Quantity { get; set; }
 
     /// <summary>
     /// Gets or sets the total cost.
     /// </summary>
-    [MinLength(1, ErrorMessage = "TotalCost must be at least 1 character long.")]
-    [Range(0, int.MaxValue, ErrorMessage = "TotalCost must be a non-negative value.")]
-
     public int TotalCost { get; set; }
 
     /// <summary>
@@ -51,7 +46,6 @@ public class Order
     /// <summary>
     /// Gets or sets the comment.
     /// </summary>
-    [MaxLength(200, ErrorMessage = "Comment must be at most 200 characters long.")]
     public string? Comment { get; set; } = string.Empty;
 
 

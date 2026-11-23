@@ -13,8 +13,8 @@ X-My-Authorization: {{token}}
 Content-Type: application/json
 
 {
-  "quantity": 2,
-  "totalCost": 150,
+  "Quantity": -2,
+  "TotalCost": -150,
   "isCompleted": false
 }
 

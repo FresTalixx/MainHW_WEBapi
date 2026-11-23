@@ -27,6 +27,6 @@ public class UserLoginValidation : AbstractValidator<UserLoginRequest>
     private async Task<bool> DoesUserExist(string email, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByEmailAsync(email);
-        return user != null;
+        return user == null;
     }
 }

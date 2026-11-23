@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MainHW.Errors;
 
@@ -12,14 +13,28 @@ public class GlobalExeptionHandler(
     {
         logger.LogError(exception, "Unhandled exception occurred: {Message}", exception.Message);
 
-        httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError; // Internal Server Error
-
-        await httpContext.Response.WriteAsJsonAsync(new
+        if (httpContext.Response.HasStarted)
         {
-            error = "An unexpected error occurred. Please try again later.",
-            message = exception.Message,
-            stackTrace = environment.IsDevelopment() ? exception.StackTrace : null
-        }, cancellationToken);
-        return true;
+            return false;
+        }
+
+        var problemDetails = new ProblemDetails
+        {
+            Status = StatusCodes.Status500InternalServerError,
+            Title = "An unexpected error occurred.",
+            Detail = environment.IsDevelopment()
+                ? exception.Message
+                : "Please try again later.",
+            Instance = httpContext.Request.Path
+        };
+
+        var context = new ProblemDetailsContext
+        {
+            HttpContext = httpContext,
+            Exception = exception,
+            ProblemDetails = problemDetails
+        };
+
+        return await problemDetailsService.TryWriteAsync(context);
     }
 }

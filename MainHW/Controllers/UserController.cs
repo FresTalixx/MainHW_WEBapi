@@ -69,6 +69,8 @@ public class UserController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<UserToken>> AuthenticateUserAsync([FromBody] UserLoginRequest loginUser)
     {
+        //throw new InvalidOperationException("test error");
+
         var validationResult = await _loginValidator.ValidateAsync(loginUser);
         if (!validationResult.IsValid)
         {
